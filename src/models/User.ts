@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { Sync } from './Sync';
 import { Eventing } from './Eventing';
 import { Attributes } from './Attributes';
@@ -29,5 +30,22 @@ export class User {
 
   get get() {
     return this.attributes.get;
+  }
+
+  set(update: UserProps): void {
+    this.attributes.set(update);
+    this.events.trigger('change');
+  }
+
+  fetch(): void {
+    const id = this.attributes.get('id');
+
+    if (typeof id !== 'number') {
+      throw new Error('Cannot fetch withour an id');
+    }
+
+    this.sync.fetch(id).then((response: AxiosResponse) => {
+      this.set(response.data);
+    });
   }
 }
