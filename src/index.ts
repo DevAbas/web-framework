@@ -1,7 +1,7 @@
-import { User } from './models/User';
+import { Collection } from './models/Collection';
 
-const user = User.buildUser({ id: 2 });
+const collection = new Collection('http://localhost:3000/users');
 
-user.fetch();
+collection.fetch();
 
-console.log(user);
+console.log(collection);
