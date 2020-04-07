@@ -1,7 +1,7 @@
 import { AxiosPromise, AxiosResponse } from 'axios';
 
 interface ModelAttributes<T> {
-  set(update: T): void;
+  set(value: T): void;
   getAll(): T;
   get<K extends keyof T>(key: K): T[K];
 }
@@ -23,8 +23,8 @@ interface HasId {
 export class Model<T extends HasId> {
   constructor(
     private attributes: ModelAttributes<T>,
-    private sync: Sync<T>,
-    private events: Events
+    private events: Events,
+    private sync: Sync<T>
   ) {}
 
   on = this.events.on;
@@ -37,13 +37,13 @@ export class Model<T extends HasId> {
   }
 
   fetch(): void {
-    const id = this.attributes.get('id');
+    const id = this.get('id');
 
     if (typeof id !== 'number') {
-      throw new Error('Cannot fetch withour an id');
+      throw new Error('Cannot fetch without an id');
     }
 
-    this.sync.fetch(id).then((response: AxiosResponse) => {
+    this.sync.fetch(id).then((response: AxiosResponse): void => {
       this.set(response.data);
     });
   }
@@ -51,9 +51,11 @@ export class Model<T extends HasId> {
   save(): void {
     this.sync
       .save(this.attributes.getAll())
-      .then((response: AxiosResponse) => {
+      .then((response: AxiosResponse): void => {
         this.trigger('save');
       })
-      .catch(() => this.trigger('error'));
+      .catch(() => {
+        this.trigger('error');
+      });
   }
 }

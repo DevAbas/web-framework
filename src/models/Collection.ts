@@ -17,11 +17,11 @@ export class Collection<T, K> {
 
   fetch(): void {
     axios.get(this.rootUrl).then((response: AxiosResponse) => {
-      response.data.map((value: K) => {
+      response.data.forEach((value: K) => {
         this.models.push(this.deserialize(value));
       });
-    });
 
-    this.trigger('change');
+      this.trigger('change');
+    });
   }
 }
